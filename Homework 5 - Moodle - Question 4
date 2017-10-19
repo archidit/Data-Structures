@@ -1,0 +1,98 @@
+#include "MovieTree.hpp"
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+int main(int argc, char* argv[]){
+		std::string tempUserInput;
+		bool quit = false;
+		int switchUserInput = 0;
+		MovieTree movieConst;
+        std::string movieIMDB;
+		int movieIMDBInt = 0;
+		
+		std::string movieTitle;
+		
+		std::string movieYear;
+		int movieYearInt = 0;
+		
+		std::string movieStock;
+		int movieStockInt = 0;;
+		
+		std::string movieFileLine;
+		std::ifstream movieFileToRead;
+		movieFileToRead.open(argv[1]);
+		//movieFileToRead.open("HW5-Movies.txt");
+		if (movieFileToRead.is_open()){
+			while (getline(movieFileToRead, movieFileLine)){
+				
+				std::stringstream movieStream(movieFileLine);
+
+				getline(movieStream, movieIMDB, ',');
+
+				movieIMDBInt = stoi(movieIMDB);
+				
+				getline(movieStream, movieTitle, ',');
+				
+				getline(movieStream, movieYear, ',');
+				movieYearInt = stoi(movieYear);
+
+				getline(movieStream, movieStock, ',');
+				movieStockInt = stoi(movieStock);
+				
+				movieConst.addMovieNode(movieIMDBInt, movieTitle, movieYearInt, movieStockInt);
+				
+			}
+			
+		}
+		movieFileToRead.close();
+		
+		while(!quit){
+				
+    		std::cout << "======Main Menu======" << std::endl;
+    		std::cout << "1. Find a movie" << std::endl;
+    		std::cout << "2. Rent a movie" << std::endl;
+    		std::cout << "3. Print the inventory" << std::endl;
+    		std::cout << "4. Quit" << std::endl;
+    		
+    		getline(std::cin, tempUserInput);
+    		switchUserInput = stoi(tempUserInput);
+    		switch(switchUserInput){
+    			
+    			case 1:{
+    			//find a movie
+    				std::string userMovieToFind;
+    				std::cout << "Enter title: " << std::endl;
+    				getline(std::cin, userMovieToFind);
+    				movieConst.findMovie(userMovieToFind);
+    				
+    			}
+    			break;
+    			
+    			case 2:{
+    				//rent a movie
+    				std::string userRental;
+    				std::cout << "Enter title: " << std::endl;
+    				getline(std::cin, userRental);
+    				movieConst.rentMovie(userRental);
+    			}
+                break;
+                
+    			case 3:{
+    				//print the inventory
+    				movieConst.printMovieInventory();
+    			}
+    			break;
+    			
+    			case 4: {
+    				//quit
+    				std::cout << "Goodbye!" << std::endl;
+    				quit = true;
+    			}
+    			break;
+    		}
+    	}	
+return 0;
+}
