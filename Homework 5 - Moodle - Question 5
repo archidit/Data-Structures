@@ -4,31 +4,38 @@
 
 using namespace std;
 
+//constructor to set root to NULL
 MovieTree::MovieTree(){
 	root = NULL;
 }
 
+//deconstructor --> should go through and delete the entire tree
 MovieTree::~MovieTree(){
+
 }
 
-//helper function to search tree
+//helper function to search tree --> returns node pointer
 MovieNode* MovieTree::search(MovieNode *node, std::string title){
-	//cout << "Test" << endl;
 	MovieNode* mySearchNode = node;
 	
 	//check if tree is empty
-	if(mySearchNode != NULL){ 
+	if(mySearchNode != NULL){
+		//If root is the node you are looking for
 	    if (mySearchNode->title == title){
 		    	return mySearchNode;
 		}
+		
+		//easier to search the tree this way instead of recursion
 		else {
 		    while (mySearchNode != NULL){
+		    	//not going to lie, the comparison stuff is still confusing
 		        if (mySearchNode->title > title){
 		            mySearchNode = mySearchNode->leftChild;    
 		        }
 		        else if (mySearchNode->title < title){
 		            mySearchNode = mySearchNode->rightChild;
 		        }
+				//if the movie node is found, this will return it
 		        else if (mySearchNode->title == title){
 		            return mySearchNode;
 		        }
@@ -42,35 +49,35 @@ MovieNode* MovieTree::search(MovieNode *node, std::string title){
 	return mySearchNode;
 }
 
+//helper function to print inventory of tree that can take root node as parameter
 void printHelper(MovieNode* root){
 	MovieNode* myNode = root;
 
 	//check if tree is empty
 	if(myNode != NULL){ 
-
-		if (myNode->leftChild != NULL){
-
-			printHelper(myNode->leftChild);       //Visit left subtree
+		//go down the left subtree
+		if (myNode->leftChild != NULL)
+			printHelper(myNode->leftChild);   
 		}
 		cout << "Movie: " << myNode->title << " " << myNode->quantity << endl;
-
+		//go down the right subtree
 		if (myNode->rightChild != NULL){
-
-			printHelper(myNode->rightChild);      // Visit right subtree
+			printHelper(myNode->rightChild); 
 		}
 	}
+	
 	else {
 		//cout << "Empty Tree" << endl;
 	}
 }
-//string compare
-//helper function to add node
+
+//string compare to determine equality of movie titles
+//helper function to add node using recursion
 MovieNode* addMovieHelper(MovieNode* root, int ranking, std::string title, int year, int quantity){
 	
 	MovieNode* newMovieNode = new MovieNode(ranking, title, year, quantity);
-
+	//if the tree is empty
 	if (root == NULL){
-		//root = newMovieNode;
 		return newMovieNode;
 	}
 	//the movie should go to the left/lesser node
@@ -82,7 +89,6 @@ MovieNode* addMovieHelper(MovieNode* root, int ranking, std::string title, int y
 	    root->rightChild = addMovieHelper(root->rightChild, ranking, title, year, quantity);
 	    return root;
 	}
-
 }
 
 //print tree InOrder = left->root->right
@@ -93,14 +99,14 @@ void MovieTree::printMovieInventory(){
 
 //create a new struct node for each movie and add it to the tree
 void MovieTree::addMovieNode(int ranking, std::string title, int releaseYear, int quantity){
-	root = addMovieHelper(root, ranking, title, releaseYear, quantity);
-	
+	root = addMovieHelper(root, ranking, title, releaseYear, quantity);	
 }
 
 void MovieTree::findMovie(std::string title){
 	MovieNode* tempMovieNode = root;
 	//helper function to search tree for the movie
 	tempMovieNode = search(tempMovieNode, title);
+	//movie was found
  	if (tempMovieNode != NULL){
 		        cout << "Movie Info:" << endl;
         	    cout << "===========" << endl;
@@ -111,12 +117,15 @@ void MovieTree::findMovie(std::string title){
 	} 
 }
 
+//user will give movie title --> find it in tree (if possible) and decrement inventory count
 void MovieTree::rentMovie(std::string title){
 	MovieNode* tempMovieNode = new MovieNode();
 	tempMovieNode = search(root, title);
+	//movie wasn't found
 	if (tempMovieNode == NULL){
 	    cout << "Movie not found." << endl;
 	}
+	
 	else if (tempMovieNode->quantity > 0){
 	    tempMovieNode->quantity--;
 	    cout << "Movie has been rented." << endl;
@@ -127,8 +136,8 @@ void MovieTree::rentMovie(std::string title){
 	    cout << "Year:" << tempMovieNode->year << endl;
 	    cout << "Quantity:" << tempMovieNode->quantity << endl;
 	}
+	
 	else if (tempMovieNode->quantity == 0){
 		cout << "Movie out of stock." << endl;
 	}
-
 }
