@@ -1,0 +1,29 @@
+// You may add helper functions between this comment and the printMovieInventory
+// definition if you like
+void printHelper(MovieNode* root){
+
+	MovieNode* myNode = root;
+
+	//check if tree is empty
+	if(myNode != NULL){ 
+
+		if (myNode->leftChild != NULL){
+
+			printHelper(myNode->leftChild);       //Visit left subtree
+		}
+		cout << "Movie: " << myNode->title << " " << myNode->quantity << endl;
+
+		if (myNode->rightChild != NULL){
+
+			printHelper(myNode->rightChild);      // Visit right subtree
+		}
+	}
+	else {
+		//cout << "Empty Tree" << endl;
+	}
+}
+
+void MovieTree::printMovieInventory()
+{
+    printHelper(root);
+}
