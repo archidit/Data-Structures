@@ -1,0 +1,25 @@
+// You may add helper functions between this comment and the rentMovie
+// definition if you like
+
+
+void MovieTree::rentMovie(string title)
+{
+	MovieNode* tempMovieNode = new MovieNode();
+	tempMovieNode = search(root, title);
+	if (tempMovieNode == NULL){
+	    cout << "Movie not found." << endl;
+	}
+	else if (tempMovieNode->quantity > 0){
+	    tempMovieNode->quantity--;
+	    cout << "Movie has been rented." << endl;
+	    cout << "Movie Info:" << endl;
+	    cout << "===========" << endl;
+	    cout << "Ranking:" << tempMovieNode->ranking << endl;
+	    cout << "Title:" << tempMovieNode->title << endl;
+	    cout << "Year:" << tempMovieNode->year << endl;
+	    cout << "Quantity:" << tempMovieNode->quantity << endl;
+	}
+	else if (tempMovieNode->quantity == 0){
+		cout << "Movie out of stock." << endl;
+	}
+}
