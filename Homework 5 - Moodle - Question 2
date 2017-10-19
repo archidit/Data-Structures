@@ -1,0 +1,27 @@
+// You may add helper functions between this comment and the addMovieNode
+// definition if you like
+
+MovieNode* addMovieHelper(MovieNode* root, int ranking, std::string title, int year, int quantity){
+	MovieNode* newMovieNode = new MovieNode(ranking, title, year, quantity);
+
+	if (root == NULL){
+		//root = newMovieNode;
+		return newMovieNode;
+	}
+	//the movie should go to the left/lesser node
+	else if (title.compare(root->title) < 0){
+		root->leftChild = addMovieHelper(root->leftChild, ranking, title, year, quantity);
+		return root;
+	}
+	else {
+	    root->rightChild = addMovieHelper(root->rightChild, ranking, title, year, quantity);
+	    return root;
+	}
+    //cout << "Movie: " << newMovieNode->title << " " << newMovieNode->quantity << endl;
+}
+
+void MovieTree::addMovieNode(int ranking, std::string title, int year, int quantity)
+{
+    //MovieNode* returnNode = root;
+    root = addMovieHelper(root, ranking, title, year, quantity);
+}
