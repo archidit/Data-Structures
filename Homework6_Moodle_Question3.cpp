@@ -1,29 +1,28 @@
-
-#include "Homework5.hpp"
+#include "MovieTree.hpp"
 #include <iostream>
 #include <sstream>
 
 using namespace std;
-
 //called by the destructor
 void deleteHelper(MovieNode *delNode){
 	//post-order traversal
 	if (delNode != NULL){
 		deleteHelper(delNode->leftChild);
 		deleteHelper(delNode->rightChild);
+        //cout << "test delete: " << delNode->title << endl;
 		delete delNode;
-		//delNode = NULL;
+		delNode = NULL;
 	}
-}
-
-//constructor 
-MovieTree::MovieTree(){
-	root = NULL;
 }
 
 //destructor
 MovieTree::~MovieTree(){
 	deleteHelper(root);
+	//root = NULL;
+}
+
+//constructor 
+MovieTree::MovieTree(){
 	root = NULL;
 }
 
@@ -115,9 +114,7 @@ MovieNode* addMovieHelper(MovieNode* node, int ranking, std::string title, int y
 
 	if (node == NULL){
 	    MovieNode* newMovieNode = new MovieNode(ranking, title, year, quantity);
-		//newMovieNode->parent = node;
 		//error is most likely coming from needing to set the parent of the node to something
-		//root = newMovieNode;
 		return newMovieNode;
 	}
 	//the movie should go to the left/lesser node
@@ -183,6 +180,10 @@ void MovieTree::rentMovie(std::string title){
 	    cout << "Title:" << tempMovieNode->title << endl;
 	    cout << "Year:" << tempMovieNode->year << endl;
 	    cout << "Quantity:" << tempMovieNode->quantity << endl;
+		
+		if (tempMovieNode->quantity == 0){
+			deleteMovie(tempMovieNode->title);
+		}
 	}
 	//movie was found but it is out of stock
 	else if (tempMovieNode->quantity == 0){
@@ -207,17 +208,19 @@ void MovieTree::deleteMovie(std::string title){
 			    if (target->parent == NULL){
 			        delete target;
 			        target = NULL;
-			        //root = target;
+			        root = nullptr;
 					}
 				//if target is the left child of the root node
 				else if (target->parent->leftChild == target){
 					target->parent->leftChild = NULL;
 					delete target;
+					target = nullptr;
 				}
 				//if target is the right child of the root node
 				else if (target->parent->rightChild == target){
 					target->parent->rightChild = NULL;
 					delete target;
+					target = nullptr;
 				}
 			}
 			
@@ -227,6 +230,7 @@ void MovieTree::deleteMovie(std::string title){
 			    if (target == root){
 			        root = target->rightChild;
 			        delete target;
+			        target = nullptr;
 			    }
 				//target is NOT root node
 			    else {
@@ -235,12 +239,14 @@ void MovieTree::deleteMovie(std::string title){
 			            target->parent->rightChild = target->rightChild;
 			            target->rightChild->parent= target->parent;
 			            delete target;
+			            target = nullptr;
 			        }
 					//if target is the leftChild of parent node
 			        else {
 			            target->parent->leftChild = target->rightChild;
 			            target->rightChild->parent = target->parent;
 			            delete target;
+			            target = nullptr;
 			        }
 			    }
 			}
@@ -250,6 +256,7 @@ void MovieTree::deleteMovie(std::string title){
 			    if (target == root){
 			        root = target->leftChild;
 			        delete target;
+			        target = nullptr;
 			    }
 				//target is NOT root node
 			    else {
@@ -258,12 +265,14 @@ void MovieTree::deleteMovie(std::string title){
 			            target->parent->rightChild = target->leftChild;
 			            target->leftChild->parent= target->parent;
 			            delete target;
+			            target = nullptr;
 			        }
 					//if target is leftChild of parent node
 			        else {
 			            target->parent->leftChild = target->leftChild;
 			            target->leftChild->parent = target->parent;
 			            delete target;
+			            target = nullptr;
 			        }
 				}
 			}
@@ -271,7 +280,6 @@ void MovieTree::deleteMovie(std::string title){
 			//target has TWO children
 			else if (target->rightChild != nullptr && target->leftChild != nullptr){
 				
-				//cout << "ooooo " << endl;
 				//get the minimum value of the right subtree underneath target
 			    MovieNode* minRightNode = getMinValue(target->rightChild);
 				//assign the min value's data to temp variables
@@ -282,16 +290,15 @@ void MovieTree::deleteMovie(std::string title){
 				//this closes the links around target and allows you delete target
 				//the minimum value node underneath the target node has a right child ~~~ this means it is bigger than minRightNode
 			    if (minRightNode->rightChild != nullptr){
-					//cout << "ppppp " << endl;
-					cout << "minRightNode->title: " << minRightNode->title << endl; //--->prints out Waking Ned Devine
+
+					/*cout << "minRightNode->title: " << minRightNode->title << endl; //--->prints out Waking Ned Devine
 					cout << "minRightNode->rightChild->title: " << minRightNode->rightChild->title << endl; //--->prints out X-Men
-					cout << "minRightNode->parent: " << minRightNode->parent << endl;
-					cout << "minRightNode->parent->title: " << minRightNode->parent->title << endl;
-//------------------------------------CAN'T ACCESS minRightNode->Parent->DATA----------------------------------------------------------------					
+					cout << "minRightNode->parent: " << minRightNode->parent << endl;*/
+//------------------------------------CAN'T ACCESS minRightNode->parent->DATA----------------------------------------------------------------					
+					/*cout << "minRightNode->parent->rightChild->title: " << minRightNode->parent->rightChild->title << endl;
 					cout << "minRightNode->parent->rightChild->title: " << minRightNode->parent->rightChild->title << endl;
-					cout << "parent->rightChild->title: " << minRightNode->parent->rightChild->title << endl;
-					cout << "parent->leftChild->title: " << minRightNode->parent->leftChild->title << endl;
-					
+					cout << "minRightNode->parent->leftChild->title: " << minRightNode->parent->leftChild->title << endl;
+					cout << "minRightNode->parent->title: " << minRightNode->parent->title << endl;*/
 					minRightNode->rightChild->parent = minRightNode->parent;
 //------------------------------------------THIS EVALUATION GETS SEG FAULT ERRORS-----------------------------------------------------------
 					if (minRightNode->parent->rightChild == minRightNode){
