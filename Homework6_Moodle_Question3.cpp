@@ -115,20 +115,29 @@ MovieNode* addMovieHelper(MovieNode* node, int ranking, std::string title, int y
 
 	if (node == NULL){
 	    MovieNode* newMovieNode = new MovieNode(ranking, title, year, quantity);
-		//newMovieNode->parent = node->parent;
+		//newMovieNode->parent = node;
 		//error is most likely coming from needing to set the parent of the node to something
 		//root = newMovieNode;
 		return newMovieNode;
 	}
 	//the movie should go to the left/lesser node
 	else if (title < node->title){
-		node->leftChild = addMovieHelper(node->leftChild, ranking, title, year, quantity);
-		return node;
+		MovieNode* tempLeftChild = addMovieHelper(node->leftChild, ranking, title, year, quantity);
+		node->leftChild = tempLeftChild;
+		tempLeftChild->parent = node;
+		//node->leftChild = addMovieHelper(node->leftChild, ranking, title, year, quantity);
+		//newMovieNode->parent = node;
+		//return node;
 	}
 	else {
-	    node->rightChild = addMovieHelper(node->rightChild, ranking, title, year, quantity);
-	    return node;
+	    MovieNode* tempRightChild = addMovieHelper(node->rightChild, ranking, title, year, quantity);
+		node->rightChild = tempRightChild;
+		tempRightChild->parent = node;
+		//node->rightChild = addMovieHelper(node->rightChild, ranking, title, year, quantity);
+		//newMovieNode->parent = node;
+	    //return node;
 	}
+	return node;
 }
 
 //create a new struct node for each movie and add it to the tree
