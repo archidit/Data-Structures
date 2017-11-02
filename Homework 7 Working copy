@@ -1,0 +1,93 @@
+#include "HashTable.hpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+
+HashTable::HashTable(int hashTableSize) {
+
+    hashTable = new wordItem*[hashTableSize];
+    for (int i = 0; i < hashTableSize; i++)
+        hashTable[i] = NULL;
+
+
+}
+HashTable::~HashTable() {
+
+    for (int i = 0; i < hashTableSize; ++i)
+    {
+        wordItem* entry = hashTable[i];
+        while (entry != NULL)
+        {
+            wordItem* prev = entry;
+            entry = entry->next;
+            delete prev;
+        }
+    }
+    delete[] hashTable;
+
+}
+
+void HashTable::getStopWords(char *ignoreWordFileName) {
+
+    std::ifstream infile(ignoreWordFileName);
+    if(infile)
+    {
+        std::string line;
+        while(infile>>line)
+        {
+            vecIgnoreWords.push_back(line);
+        }
+    }
+    infile.close();
+}
+
+int HashTable::getHash(std::string word) {
+
+    unsigned long hash = 5381;
+    for (auto c : word) {
+        hash = (hash << 5) + hash + c; /* hash * 33 + c */
+    }
+    return hash;
+
+}
+
+bool HashTable::isStopWord(std::string word) {
+
+    for (auto i: vecIgnoreWords)
+    {
+        if (word == i){
+
+            return true;
+        }
+
+    }
+    return false;
+
+}
+
+void HashTable::addWord(std::string word) {
+
+    wordItem* entry = new wordItem;
+    entry->word=word;
+    entry->count = 1;
+    entry->next = NULL;
+    int index = getHash(word);
+    if (hashTable[index]=NULL){
+
+        hashTable[index] = entry;
+        numUniqueWords++;
+    }
+    else if (searchTable(word)->word==word){
+
+        wordItem* ptr = hashTable[index];
+        entry->count++;
+        numCollisions++;
+        while(ptr->next != NULL){
+
+            ptr = ptr->next;
+
+        }
+        ptr->next = entry;
+    }
+
