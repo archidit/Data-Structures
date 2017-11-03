@@ -157,27 +157,22 @@ int HashTable::getTotalNumberNonStopWords() {
     return total;
 }
 void HashTable::printTopN(int n) {
-
-    wordItem* arr[n];
-    wordItem* temp;
+    wordItem *arr[n];
+    wordItem *temp;
     int i;
-    for (i=0;i<hashTableSize; i++){
+    for (i = 0; i < hashTableSize; i++) { ;
         temp = hashTable[i];
-        while (temp!=NULL){
-            for (int j = 0; j<n; j++){
-                if(arr[j]->count<temp->count&&arr[j+1]->count<temp->count){
+        while (temp != NULL) {
+            for (int j = n-1; (j>=0 && arr[j]->count<=temp->count); j--){
 
-                    arr[j]=arr[j+1];
-                    arr[j] = temp;
-                }
+                arr[j+1]=arr[j];
+                arr[j+1]= temp;
+
             }
-            temp = temp->next;
+            temp = temp -> next;
         }
-
-
     }
-    for (int k = 0; k < n; k++)
-
-        std::cout<<arr[n]->word<<"--"<<arr[n]->count;
-
+    //test to see if anything in array
+    //array not holding numbers after update
+    std::cout<<arr[1]->count;
 }
