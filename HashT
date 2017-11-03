@@ -1,0 +1,183 @@
+//Kelvin Davis
+//Homework 7 Working copy
+
+
+#include "HashTable.hpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+
+HashTable::HashTable(int num) {
+    hashTableSize = num;
+    hashTable = new wordItem*[hashTableSize];
+    for (int i = 0; i < hashTableSize; i++)
+        hashTable[i] = NULL;
+
+
+}
+HashTable::~HashTable() {
+
+    for (int i = 0; i < hashTableSize; ++i)
+    {
+        wordItem* entry = hashTable[i];
+        while (entry != NULL)
+        {
+            wordItem* prev = entry;
+            entry = entry->next;
+            delete prev;
+        }
+    }
+    delete[] hashTable;
+
+}
+
+void HashTable::getStopWords(char *ignoreWordFileName) {
+
+    std::ifstream infile(ignoreWordFileName);
+    if(infile)
+    {
+        std::string line;
+        std::string myLine;
+        int vectorIndex = 0;
+        while (infile >> myLine){
+            vecIgnoreWords[vectorIndex] = myLine;
+            vectorIndex++;;
+        }
+
+    }
+    infile.close();
+}
+
+int HashTable::getHash(std::string word) {
+    unsigned int len = word.length();
+    unsigned int hash = 5381;
+    unsigned int i = 0;
+
+    for (i = 0; i < len; i++)
+    {
+        hash = ((hash << 5) + hash) + (word[i]);
+    }
+
+    return hash%hashTableSize;
+}
+
+
+void HashTable::incrementCount(std::string word) {
+    wordItem* temp;
+    temp = searchTable(word);
+    temp->count++;
+}
+
+bool HashTable::isStopWord(std::string word) {
+    bool wordFound = false;
+    //searches through list of most common words and only returns true if the word is found
+    for (unsigned int vectorInt = 0; vectorInt < vecIgnoreWords.size(); vectorInt++){
+        //cout << word << " : " << _vecIgnoreWords[vectorInt] << endl;
+        if (word == vecIgnoreWords[vectorInt]){
+            //true = 1
+            //cout << vectorInt << endl; --> print out index position in vector that you found 'word'
+            wordFound = true;
+            return wordFound;
+        }
+    }
+    return wordFound;
+
+}
+wordItem * HashTable::searchTable(std::string word) {
+    bool flag = false;
+    int hash_val = getHash(word);
+    wordItem* entry = hashTable[hash_val];
+    while (entry != NULL)
+    {
+        if (entry->word == word)
+        {
+            flag = true;
+            return entry;
+        }
+
+        entry = entry->next;
+    }
+    if (!flag)
+        return NULL;
+
+
+}
+bool HashTable::isInTable(std::string word) {
+
+    if (searchTable(word)){
+        return true;
+    }
+    return false;
+
+}
+
+void HashTable::addWord(std::string word) {
+    int hash_val = getHash(word);
+    wordItem* prev = NULL;
+    wordItem* entry = hashTable[hash_val];
+    while (entry != NULL)
+    {
+        prev = entry;
+        entry = entry->next;
+    }
+    if (entry == NULL)
+    {
+        entry = new wordItem;
+        entry->count = 1;
+        entry->word = word;
+        entry ->next = NULL;
+        if (prev == NULL)
+        {
+            hashTable[hash_val]= entry;
+        }
+        else
+        {
+            prev->next = entry;
+        }
+    }
+    incrementCount(word);
+    entry->word = word;
+
+}
+
+int HashTable::getTotalNumberNonStopWords() {
+
+    int total = 0;
+    wordItem *temp;
+    for(int i = 0; i<hashTableSize; i++)
+    {
+        temp = hashTable[i];
+        while (temp!=NULL){
+            total += temp->count;
+
+            temp = temp->next;
+        }
+    }
+    return total;
+}
+void HashTable::printTopN(int n) {
+
+    wordItem* arr[n];
+    wordItem* temp;
+    int i;
+    for (i=0;i<hashTableSize; i++){
+        temp = hashTable[i];
+        while (temp!=NULL){
+            for (int j = 0; j<n; j++){
+                if(arr[j]->count<temp->count&&arr[j+1]->count<temp->count){
+
+                    arr[j]=arr[j+1];
+                    arr[j] = temp;
+                }
+            }
+            temp = temp->next;
+        }
+
+
+    }
+    for (int k = 0; k < n; k++)
+
+        std::cout<<arr[n]->word<<"--"<<arr[n]->count;
+
+}
